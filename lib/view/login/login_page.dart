@@ -1,4 +1,3 @@
-import 'dart:js';
 
 import 'package:fire_auth/controller/login_controller.dart';
 import 'package:fire_auth/view/signup/singup_page.dart';
@@ -15,40 +14,37 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginController = context.read<LogInProvider>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      loginController.emailController.clear();
-      loginController.passwordController.clear();
-    });
+   
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                // stops: [
-                //   0.1,
-                //   0.4,
-                //   0.6,
-                //   0.9
-                // ],
-                colors: [
-                  Colors.indigo.shade500,
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              // stops: [
+              //   0.1,
+              //   0.4,
+              //   0.6,
+              //   0.9
+              // ],
+              colors: [
+                Colors.indigo.shade500,
 
-                  Colors.white54,
-                  // Colors.indigo,
-                  // Colors.teal
-                ],
-              ),
+                Colors.white54,
+                // Colors.indigo,
+                // Colors.teal
+              ],
             ),
+          ),
+          child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
                 child: Form(
-                  //  key: Provider.of<LogInProvider>(context).formKey,
+                   key: loginController.formKey,
                   child: Column(
                     children: [
                       // SizedBox(height: MediaQuery.of(context).size.height / 5),
@@ -58,6 +54,7 @@ class LoginScreen extends StatelessWidget {
                           style: GoogleFonts.permanentMarker(fontSize: 30)),
                       kHeight20,
                       TextFormField(
+                        controller: loginController.emailController,
                         obscureText: false,
                         autofocus: false,
                         keyboardType: TextInputType.emailAddress,
@@ -72,12 +69,17 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
                                     const BorderSide(color: Colors.black))),
-                        // validator: (value){
-
-                        // },
+                        validator: (value){
+                        if(value == null || value.isEmpty){
+                          return "Enter E-mail";
+                        }else{
+                          return null;
+                        }
+                        },
                       ),
                       kHeight20,
                       TextFormField(
+                        controller: loginController.passwordController,
                         obscureText: true,
                         keyboardType: TextInputType.visiblePassword,
                         decoration: InputDecoration(
@@ -92,14 +94,21 @@ class LoginScreen extends StatelessWidget {
                             borderSide: const BorderSide(color: Colors.black),
                           ),
                         ),
+                         validator: (value){
+                        if(value == null || value.isEmpty){
+                          return "Enter password";
+                        }else{
+                          return null;
+                        }
+                         }
                       ),
                       kHeight10,
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Login'),
-                        ),
+                    
+                      ElevatedButton(
+                        onPressed: () {
+                          loginController.formValidation(context);
+                        },
+                        child: loginController.isLoading == true ? const CircularProgressIndicator(strokeWidth: 2,):const Text('Login'),
                       ),
                       TextButton(
                         onPressed: () {

@@ -12,31 +12,30 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final signUpController = context.read<SignUpProvider>();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-   signUpController.emailController.clear();
-   signUpController.passwordController.clear();
-   signUpController.userNameController.clear();
-   // ignore: invalid_use_of_protected_member
-   signUpController.notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      signUpController.emailController.clear();
+      signUpController.passwordController.clear();
+      signUpController.userNameController.clear();
+      // ignore: invalid_use_of_protected_member
+      signUpController.notifyListeners();
     });
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Colors.indigo.shade500,
-                  Colors.white54,
-                ],
-              ),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.indigo.shade500,
+                Colors.white54,
+              ],
             ),
+          ),
+          child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
@@ -46,12 +45,12 @@ class SignUpScreen extends StatelessWidget {
                       key: value.formKey,
                       child: Column(
                         children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 8),
+                          // SizedBox(
+                          //     height: MediaQuery.of(context).size.height / 8),
                           Text('SignUp',
                               style: GoogleFonts.permanentMarker(fontSize: 30)),
                           kHeight20,
-                          const SignUpImageWidget(),
+                         const  SignUpImageWidget(),
                           kHeight20,
                           TextFormField(
                             controller: value.userNameController,
@@ -122,7 +121,7 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             validator: (inputValue) {
                               if (inputValue == null || inputValue.isEmpty) {
-                                return 'EnterPassword';
+                                return 'Enter Password';
                               } else {
                                 return null;
                               }
@@ -131,10 +130,14 @@ class SignUpScreen extends StatelessWidget {
                           kHeight10,
                           ElevatedButton(
                             onPressed: () async {
-                              final errorMsg =
-                             await signUpController.signUpUser(context);
+                              if (value.formKey.currentState!.validate()) {
+                                 final errorMsg =
+                                   signUpController.signUpUser(context);
 
-                             signUpController.checkFormField(context, errorMsg);
+                              signUpController.checkFormField(
+                                  context, errorMsg);
+                              }
+                             
                             },
                             child: const Text('SignUp'),
                           ),

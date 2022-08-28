@@ -1,20 +1,23 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fire_auth/model/user_data_model.dart';
+import 'package:fire_auth/utils/snackbar.dart';
 import 'package:fire_auth/view/home_view/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../utils/snackbar.dart';
-
-final auth = FirebaseAuth.instance;
+final _auth = FirebaseAuth.instance;
 
 class SignUpProvider with ChangeNotifier {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  final mobNoController = TextEditingController();
 
   UserData userData = UserData();
   UserData loggedUserDetails = UserData();
@@ -22,40 +25,43 @@ class SignUpProvider with ChangeNotifier {
 
   Future<String> signUpUser(context) async {
     final password = passwordController.text;
+    // final email = emailController.text;
+    // final userName = userNameController.text;
 
-    if (password.length < 6) {
-   SnackBarWidget.checkFormFill(context, "Password should be at least 6 characters");
-}
+    if (password.length < 6 || newImage.isEmpty) {}
     try {
-      newUser = await auth
+      newUser = await _auth
           .createUserWithEmailAndPassword(
               email: emailController.text, password: passwordController.text)
-          .then((value) => addAllUserDetails(context));
+          .then((value) => addAllUserDetails(context, newImage));
       return Future.value("");
     } on FirebaseAuthException catch (e) {
       log("$e");
-  return Future.value(e.message);
+      return SnackBarWidget.checkFormFill(context, e.message);
     }
   }
 
-  Future addAllUserDetails(context) async {
+  Future addAllUserDetails(context, String newImage) async {
     final fireSore = FirebaseFirestore.instance;
 
-    User? user = auth.currentUser;
+    User? user = _auth.currentUser;
     userData.email = user!.email!.trim();
     userData.name = userNameController.text.trim();
-    userData.id = user.uid;
-    fireSore.collection("users").doc(user.uid).set(
+    userData.image = newImage;
+    userData.phoneNo = mobNoController.text.isEmpty?null:mobNoController.text;
+    await fireSore.collection("users").doc(user.uid).set(
           userData.toJson(),
-        );
-    await fireSore.collection("users").doc(user.uid).get().then((value) {
+        ).then((value) async {
+          await  fireSore.collection("users").doc(user.uid).get().then((value) {
       loggedUserDetails = UserData.fromJson(value.data()!);
-      log(loggedUserDetails.name.toString());
       notifyListeners();
     });
+        },);
+    notifyListeners();
+   
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: ((context) => const HomePage()),
+          builder: ((context) =>  HomePage(type: ActionType.signUp,)),
         ),
         ((route) => false));
   }
@@ -68,4 +74,24 @@ class SignUpProvider with ChangeNotifier {
       //  SnackBarWidget.chekFormFill(context, errorMessage);
     }
   }
+
+  String newImage = "";
+  getImageFromGallery(conteex) async {
+    XFile? pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final bytes = File(pickedFile!.path).readAsBytesSync();
+    newImage = base64Encode(bytes);
+    notifyListeners();
+  }
 }
+
+// class PickImageController extends ChangeNotifier {
+//   String newImage = "";
+//   getImageFromGallery(conteex) async {
+//     XFile? pickedFile =
+//         await ImagePicker().pickImage(source: ImageSource.gallery);
+//     final bytes = File(pickedFile!.path).readAsBytesSync();
+//     newImage = base64Encode(bytes);
+//     notifyListeners();
+//   }
+// }

@@ -1,3 +1,4 @@
+import 'package:fire_auth/controller/home_controller.dart';
 import 'package:fire_auth/controller/login_controller.dart';
 import 'package:fire_auth/controller/signup_controller.dart';
 import 'package:fire_auth/view/login/login_page.dart';
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  
+
   runApp(const MyApp());
 }
 
@@ -19,8 +20,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => SignUpProvider(),),
-        ChangeNotifierProvider(create: (context) => LogInProvider())
+        ChangeNotifierProvider(
+          create: (context) => SignUpProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LogInProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
