@@ -15,12 +15,10 @@ class SignUpImageWidget extends StatelessWidget {
         clipBehavior: Clip.none,
         fit: StackFit.expand,
         children: [
-          const CircleAvatar(
+        const   CircleAvatar(
             backgroundColor: kBlack,
-            radius: 30,
-            //   backgroundImage: MemoryImage(
-            // //    const Base64Decoder().convert(),
-            //   ),
+            backgroundImage: AssetImage('assets/userIcon.png',)
+         
           ),
           Positioned(
             bottom: 0,

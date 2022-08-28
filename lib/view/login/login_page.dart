@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:fire_auth/controller/login_controller.dart';
 import 'package:fire_auth/view/signup/singup_page.dart';
 import 'package:fire_auth/view/login/widget/login_option.dart';
@@ -12,6 +14,11 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loginController = context.read<LogInProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loginController.emailController.clear();
+      loginController.passwordController.clear();
+    });
     return SafeArea(
       child: Scaffold(
         body: Center(
@@ -41,12 +48,12 @@ class LoginScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
                 child: Form(
-                  key: Provider.of<LogInProvider>(context).formKey,
+                  //  key: Provider.of<LogInProvider>(context).formKey,
                   child: Column(
                     children: [
                       // SizedBox(height: MediaQuery.of(context).size.height / 5),
                       Image.asset('assets/login_img1.png',
-                          height: MediaQuery.of(context).size.height / 3),
+                          height: MediaQuery.of(context).size.height / 3.5),
                       Text('LOGIN',
                           style: GoogleFonts.permanentMarker(fontSize: 30)),
                       kHeight20,
@@ -65,9 +72,9 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
                                     const BorderSide(color: Colors.black))),
-                                    // validator: (value){
-                         
-                                    // },
+                        // validator: (value){
+
+                        // },
                       ),
                       kHeight20,
                       TextFormField(
@@ -94,31 +101,40 @@ class LoginScreen extends StatelessWidget {
                           child: const Text('Login'),
                         ),
                       ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                        ),
+                      ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          const Text(
+                            "Don't have account yet?",
+                            style: TextStyle(color: kBlack),
+                          ),
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
-                              ));
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpScreen(),
+                                ),
+                              );
                             },
                             child: const Text(
                               'Sign Up',
-                              style: TextStyle(color: kBlack),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: kBlack),
                             ),
                           ),
                         ],
                       ),
                       kHeight10,
-                          const  LoginOptions(),
+                      const LoginOptions(),
                       kHeight20,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
