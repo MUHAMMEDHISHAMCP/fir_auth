@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:fire_auth/controller/home_controller.dart';
 import 'package:fire_auth/controller/login_controller.dart';
 import 'package:fire_auth/controller/signup_controller.dart';
 import 'package:fire_auth/utils/constant.dart';
+import 'package:fire_auth/view/home_view/widget/profile_img.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,13 +19,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginProvider = context.watch<LogInProvider>();
-    // WidgetsBinding.instance.addPostFrameCallback((_){
-    //   final fff = context.read<SignUpProvider>();
-    //   fff.loggedUserDetails.email;
-    //   fff.loggedUserDetails.name;
-    //   fff.loggedUserDetails.phoneNo;
-    //   fff.newImage;
-    // });
+    final editProvider = context.watch<HomeProvider>();
+    editProvider.notifyListeners();
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -49,41 +44,42 @@ class HomePage extends StatelessWidget {
                 builder: (context, value, child) {
                   return Column(
                     children: [
-                      type == ActionType.signUp
-                          ? value.newImage.isEmpty
-                              ? const CircleAvatar(
-                                  radius: 100,
-                                  backgroundImage:
-                                      AssetImage('assets/userIcon.png'),
-                                  child: Icon(Icons.add_a_photo),
-                                )
-                              : CircleAvatar(
-                                  radius: 100,
-                                  //   backgroundColor: kBlack,
-                                  backgroundImage: MemoryImage(
-                                    const Base64Decoder()
-                                        .convert(value.newImage),
-                                  ),
-                                )
-                          : loginProvider.loggedUserDetails.image == null
-                              ? const CircleAvatar(
-                                  radius: 100,
-                                  backgroundImage:
-                                      AssetImage('assets/userIcon.png'),
-                                  child: Icon(Icons.add_a_photo),
-                                )
-                              : CircleAvatar(
-                                  radius: 100,
-                                  //   backgroundColor: kBlack,
-                                  backgroundImage: MemoryImage(
-                                    const Base64Decoder().convert(loginProvider
-                                        .loggedUserDetails.image
-                                        .toString()),
-                                  ),
-                                ),
+                      // type == ActionType.signUp
+                      //     ? value.newImage.isEmpty
+                      //         ? const CircleAvatar(
+                      //             radius: 100,
+                      //             backgroundImage:
+                      //                 AssetImage('assets/userIcon.png'),
+                      //             child: Icon(Icons.add_a_photo),
+                      //           )
+                      //         : CircleAvatar(
+                      //             radius: 100,
+                      //             //   backgroundColor: kBlack,
+                      //             backgroundImage: MemoryImage(
+                      //               const Base64Decoder()
+                      //                   .convert(value.newImage),
+                      //             ),
+                      //           )
+                      //     : loginProvider.loggedUserDetails.image == null
+                      //         ? const CircleAvatar(
+                      //             radius: 100,
+                      //             backgroundImage:
+                      //                 AssetImage('assets/userIcon.png'),
+                      //             child: Icon(Icons.add_a_photo),
+                      //           )
+                      //         : CircleAvatar(
+                      //             radius: 100,
+                      //             //   backgroundColor: kBlack,
+                      //             backgroundImage: MemoryImage(
+                      //               const Base64Decoder().convert(loginProvider
+                      //                   .loggedUserDetails.image
+                      //                   .toString()),
+                      //             ),
+                      //           ),
+                      ProfilePic(type: type),
                       kHeight20,
                       TextFormField(
-                        controller: value.userNameController,
+                        controller: editProvider.userNameController,
                         obscureText: false,
                         autofocus: false,
                         keyboardType: TextInputType.name,
@@ -104,7 +100,7 @@ class HomePage extends StatelessWidget {
                       ),
                       kHeight20,
                       TextFormField(
-                        controller: value.emailController,
+                        controller: editProvider.emailController,
                         obscureText: false,
                         autofocus: false,
                         keyboardType: TextInputType.emailAddress,
@@ -134,10 +130,11 @@ class HomePage extends StatelessWidget {
                       ),
                       kHeight20,
                       TextFormField(
-                        controller: value.mobNoController,
+                        controller: editProvider.mobNoController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: 'Contact No',
+                          hintText:loginProvider.loggedUserDetails.phoneNo!.isEmpty?'':loginProvider.loggedUserDetails.phoneNo,
+                              
                           border: const OutlineInputBorder(),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -170,7 +167,8 @@ class HomePage extends StatelessWidget {
                               kWidth10,
                               ElevatedButton(
                                 onPressed: () {
-                                  
+                                  editProvider.updateUserDetails(context);
+                                  editProvider.notifyListeners();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   fixedSize: const Size(150, 30),

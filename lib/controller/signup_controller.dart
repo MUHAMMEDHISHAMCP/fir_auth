@@ -71,7 +71,7 @@ class SignUpProvider with ChangeNotifier {
       return;
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      //  SnackBarWidget.chekFormFill(context, errorMessage);
+        SnackBarWidget.checkFormFill(context, errorMessage);
     }
   }
 
